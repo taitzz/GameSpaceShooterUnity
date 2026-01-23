@@ -8,10 +8,11 @@ using UnityEngine;
 public class Guns
 {
     public GameObject rightGun, leftGun, centralGun;
-    [HideInInspector] public ParticleSystem leftGunVFX, rightGunVFX, centralGunVFX; 
+    [HideInInspector] public ParticleSystem leftGunVFX, rightGunVFX, centralGunVFX;
 }
 
-public class PlayerShooting : MonoBehaviour {
+public class PlayerShooting : MonoBehaviour
+{
 
     [Tooltip("shooting frequency. the higher the more frequent")]
     public float fireRate;
@@ -25,11 +26,11 @@ public class PlayerShooting : MonoBehaviour {
 
     [Tooltip("current weapon power")]
     [Range(1, 4)]       //change it if you wish
-    public int weaponPower = 1; 
+    public int weaponPower = 1;
 
     public Guns guns;
-    bool shootingIsActive = true; 
-    [HideInInspector] public int maxweaponPower = 4; 
+    bool shootingIsActive = true;
+    [HideInInspector] public int maxweaponPower = 4;
     public static PlayerShooting instance;
 
     private void Awake()
@@ -45,20 +46,41 @@ public class PlayerShooting : MonoBehaviour {
         guns.centralGunVFX = guns.centralGun.GetComponent<ParticleSystem>();
     }
 
-    private void Update()
+    // private void Update()
+    // {
+    //     if (shootingIsActive)
+    //     {
+    //         if (Time.time > nextFire)
+    //         {
+    //             MakeAShot();
+    //             nextFire = Time.time + 1 / fireRate;
+    //         }
+    //     }
+    // }
+
+    public GameObject bulletPrefabs;
+    public float shootingInterval;
+    private float lastBulletTime;
+    void Update()
     {
-        if (shootingIsActive)
+        if (Input.GetMouseButton(0))
         {
-            if (Time.time > nextFire)
+            if (Time.time - lastBulletTime >
+            shootingInterval)
             {
-                MakeAShot();                                                         
-                nextFire = Time.time + 1 / fireRate;
+                ShootBullet();
+                lastBulletTime = Time.time;
             }
         }
     }
 
+    private void ShootBullet()
+    {
+        Instantiate(bulletPrefabs, transform.position, transform.rotation);
+    }
+
     //method for a shot
-    void MakeAShot() 
+    void MakeAShot()
     {
         switch (weaponPower) // according to weapon power 'pooling' the defined anount of projectiles, on the defined position, in the defined rotation
         {
